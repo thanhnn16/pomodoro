@@ -7,6 +7,7 @@ class DurationConfigurator {
   final int longBreakDuration;
   final Function(int, int, int) onDurationsUpdated;
   final Function(String) onBackgroundImageUpdated;
+  final Function(String) onNotificationSoundUpdated;
 
   DurationConfigurator({
     required this.context,
@@ -15,6 +16,7 @@ class DurationConfigurator {
     required this.longBreakDuration,
     required this.onDurationsUpdated,
     required this.onBackgroundImageUpdated,
+    required this.onNotificationSoundUpdated,
   });
 
   void configureDurations() {
@@ -25,7 +27,8 @@ class DurationConfigurator {
     TextEditingController longBreakController =
         TextEditingController(text: '$longBreakDuration');
 
-    String selectedNotificationSound = 'Sound 1';
+    ValueNotifier<String> selectedNotificationSoundNotifier =
+        ValueNotifier<String>('Bell');
 
     List<String> imageList = [
       'bg_1.jpg',
@@ -86,19 +89,30 @@ class DurationConfigurator {
                     'Choose notification sound',
                     style: TextStyle(fontSize: 14),
                   ),
-                  DropdownButton<String>(
-                    value: selectedNotificationSound,
-                    items: <String>['Sound 1', 'Sound 2', 'Sound 3', 'Sound 4']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
+                  ValueListenableBuilder<String>(
+                    valueListenable: selectedNotificationSoundNotifier,
+                    builder: (context, selectedNotificationSound, child) {
+                      return DropdownButton<String>(
+                        value: selectedNotificationSound,
+                        items: <String>[
+                          'Bell',
+                          'Flute',
+                          'Piano',
+                          'Relax',
+                          'Water'
+                        ].map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          selectedNotificationSoundNotifier.value = newValue!;
+                          onNotificationSoundUpdated(newValue);
+                        },
+                        isExpanded: true,
                       );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      selectedNotificationSound = newValue!;
                     },
-                    isExpanded: true,
                   ),
                   const Text(
                     'Choose background image',

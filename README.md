@@ -9,9 +9,8 @@ A Simple Pomodoro App for Flutter Learning Practice.
 4. [Flutter Interaction](https://docs.flutter.dev/ui/interactivity)
 5. [Flutter Timer](https://pub.dev/packages/flutter_timer)
 6. [Flutter Notification](https://pub.dev/packages/flutter_local_notifications)
-7. [Flutter Sound](https://pub.dev/packages/flutter_sound)
-8. [Flutter Shared Preferences](https://pub.dev/packages/shared_preferences)
-9. [Flutter Audio Player](https://pub.dev/packages/audioplayers)
+7. [Flutter Shared Preferences](https://pub.dev/packages/shared_preferences)
+8. [Flutter Audio Player](https://pub.dev/packages/audioplayers)
 
 Other resources:
 1. Fonts: https://pub.dev/packages/google_fonts
@@ -40,13 +39,14 @@ The code structure for the Pomodoro Timer app is provided in the `lib` directory
 ## THINGS I LEARNED FROM THIS PROJECT
 1. Basic Flutter UI design
 2. Basic Dart Language
-3. Flutter Timer
-4. Flutter Notification (Local Notification)
-5. TextEditingController
-6. AlertDialog
-7. Flutter Sound
+3. Basic State Management
+4. Flutter Timer
+5. Flutter Notification (Local Notification)
+6. TextEditingController
+7. AlertDialog
 8. Flutter Shared Preferences
 9. Flutter Audio Player
+10. ValueNotifier
 
 ## TODOs:
 

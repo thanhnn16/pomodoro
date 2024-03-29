@@ -1,7 +1,7 @@
 import 'dart:async';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sound/public/flutter_sound_player.dart';
 import '../services/notifications.dart';
 import 'configurator.dart';
 
@@ -28,25 +28,27 @@ class PomodoroScreenState extends State<PomodoroScreen> {
 
   late Notifications _notifications;
 
-  late FlutterSoundPlayer? _soundPlayer;
+  final player = AudioPlayer();
 
   String _backgroundImage = 'assets/images/bg_1.jpg';
-  String _notificationSound = 'assets/sounds/bell.mp3';
+  String _notificationSound = 'sounds/bell.mp3';
 
   @override
   void initState() {
     super.initState();
-    _soundPlayer = FlutterSoundPlayer();
-    _initializePlayer();
+
     _notifications = Notifications();
     if (kDebugMode) {
       print('Notification plugin has been initialized');
-      print('Player has been initialized');
     }
     _remainingTime = _pomodoroDuration * 60;
   }
 
   Timer? _timer;
+
+  Future<void> _showNotification(String title, String body) async {
+    await _notifications.showNotification(title, body);
+  }
 
   int _getRemainingTime(String mode) {
     switch (mode) {
@@ -59,10 +61,6 @@ class PomodoroScreenState extends State<PomodoroScreen> {
       default:
         return 0;
     }
-  }
-
-  Future<void> _showNotification(String title, String body) async {
-    await _notifications.showNotification(title, body);
   }
 
   void _startTimer() {
@@ -157,30 +155,18 @@ class PomodoroScreenState extends State<PomodoroScreen> {
           _backgroundImage = 'assets/images/$updatedBackgroundImage';
         });
       },
+      onNotificationSoundUpdated: (String updatedNotificationSound) {
+        setState(() {
+          _notificationSound =
+              'sounds/${updatedNotificationSound.toLowerCase()}.mp3';
+          _playSound(_notificationSound);
+        });
+      },
     ).configureDurations();
   }
 
-  Future<void> _initializePlayer() async {
-    await _soundPlayer?.openAudioSession();
-  }
-
-  @override
-  void dispose() {
-    _soundPlayer?.closeAudioSession();
-    _soundPlayer = null;
-    super.dispose();
-  }
-
-  Future<void> _playSound(String soundPath) async {
-    await _soundPlayer?.startPlayer(
-      fromURI: 'assets/sounds/$soundPath',
-    );
-  }
-
-  Future<void> stopPlayer() async {
-    if (_soundPlayer != null) {
-      await _soundPlayer?.stopPlayer();
-    }
+  void _playSound(String soundPath) async {
+    await player.play(AssetSource(soundPath));
   }
 
   @override
