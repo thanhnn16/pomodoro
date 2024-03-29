@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import '../services/notifications.dart';
 import 'configurator.dart';
 
+// TODO: update logic of cycle completion.
+
 class PomodoroScreen extends StatefulWidget {
   const PomodoroScreen({super.key});
   @override

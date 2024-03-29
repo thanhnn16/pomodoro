@@ -44,9 +44,9 @@ The code structure for the Pomodoro Timer app is provided in the `lib` directory
 5. Flutter Notification (Local Notification)
 6. TextEditingController
 7. AlertDialog
-8. Flutter Shared Preferences
-9. Flutter Audio Player
-10. ValueNotifier
+8. Flutter Audio Player
+9. ValueNotifier
+10. ValueListenableBuilder
 
 ## TODOs:
 
