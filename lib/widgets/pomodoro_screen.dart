@@ -1,55 +1,195 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:pomodoro/services/timer_controller.dart';
+import 'package:flutter_sound/public/flutter_sound_player.dart';
+import '../services/notifications.dart';
+import 'configurator.dart';
 
 class PomodoroScreen extends StatefulWidget {
   const PomodoroScreen({super.key});
-
   @override
-  _PomodoroScreenState createState() => _PomodoroScreenState();
+  PomodoroScreenState createState() => PomodoroScreenState();
 }
 
-class _PomodoroScreenState extends State<PomodoroScreen> {
-  final TimerController _timerController = TimerController();
-  String _selectedButton = 'pomodoro';
+class PomodoroScreenState extends State<PomodoroScreen> {
+  bool _isTimerRunning = false;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   // Get the default values from TimerController
-  //   _timerController.getDefaultValues().then((durations) {
-  //     setState(() {
-  //       _timerController.configureDurations(
-  //         durations.pomodoroDuration,
-  //         durations.shortBreakDuration,
-  //         durations.longBreakDuration,
-  //       );
-  //     });
-  //   });
-  // }
+  int _pomodoroDuration = 25;
+  int _shortBreakDuration = 5;
+  int _longBreakDuration = 10;
+  String _currentMode = 'pomodoro';
+
+  int _remainingTime = 0;
+
+  bool _isWorking = true;
+
+  int _completedCycles = 0;
+  final int _cyclesUntilLongBreak = 4;
+
+  late Notifications _notifications;
+
+  late FlutterSoundPlayer? _soundPlayer;
+
+  String _backgroundImage = 'assets/images/bg_1.jpg';
+  String _notificationSound = 'assets/sounds/bell.mp3';
+
+  @override
+  void initState() {
+    super.initState();
+    _soundPlayer = FlutterSoundPlayer();
+    _initializePlayer();
+    _notifications = Notifications();
+    if (kDebugMode) {
+      print('Notification plugin has been initialized');
+      print('Player has been initialized');
+    }
+    _remainingTime = _pomodoroDuration * 60;
+  }
+
+  Timer? _timer;
+
+  int _getRemainingTime(String mode) {
+    switch (mode) {
+      case 'pomodoro':
+        return _pomodoroDuration * 60;
+      case 'short break':
+        return _shortBreakDuration * 60;
+      case 'long break':
+        return _longBreakDuration * 60;
+      default:
+        return 0;
+    }
+  }
+
+  Future<void> _showNotification(String title, String body) async {
+    await _notifications.showNotification(title, body);
+  }
 
   void _startTimer() {
-    _timerController.startTimer(25);
+    if (_isTimerRunning) {
+      if (_timer != null) {
+        _timer!.cancel();
+        _timer = null;
+      }
+      setState(() {
+        _isTimerRunning = false;
+      });
+    } else {
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (_remainingTime > 0) {
+          setState(() {
+            _remainingTime--;
+          });
+        } else {
+          _timer!.cancel();
+          _timer = null;
+          _isTimerRunning = false;
+
+          if (_currentMode == 'pomodoro' && _remainingTime == 0) {
+            _completedCycles++;
+            _playSound(_notificationSound);
+            _showNotification('Cycle Completed',
+                'The cycle has completed $_completedCycles times');
+            if (_completedCycles >= _cyclesUntilLongBreak) {
+              _currentMode = 'long break';
+            } else {
+              _currentMode = 'short break';
+            }
+          } else if (_currentMode == 'short break' ||
+              _currentMode == 'long break') {
+            _currentMode = 'pomodoro';
+          }
+
+          _remainingTime = _getRemainingTime(_currentMode);
+          _startTimer();
+
+          setState(() {
+            _isTimerRunning = true;
+          });
+        }
+      });
+      setState(() {
+        _isTimerRunning = true;
+      });
+      if (_currentMode == 'pomodoro') {
+        _isWorking = true;
+      } else if (_currentMode == 'short break' ||
+          _currentMode == 'long break') {
+        _isWorking = false;
+      }
+    }
   }
 
   void _resetTimer() {
-    _timerController.resetTimer();
+    _playSound(_notificationSound);
+
+    if (_timer != null) {
+      _timer!.cancel();
+      _timer = null;
+    }
+
+    setState(() {
+      _isWorking = true;
+      _completedCycles = 0;
+      _isTimerRunning = false;
+      _currentMode = 'pomodoro';
+      _remainingTime = _getRemainingTime(_currentMode);
+    });
   }
 
   void _configureDurations() {
-    _timerController.configureDurations(
-      5,
-      5,
-      10,
+    DurationConfigurator(
+      context: context,
+      pomodoroDuration: _pomodoroDuration,
+      shortBreakDuration: _shortBreakDuration,
+      longBreakDuration: _longBreakDuration,
+      onDurationsUpdated: (int updatedPomodoroDuration,
+          int updatedShortBreakDuration, int updatedLongBreakDuration) {
+        setState(() {
+          _pomodoroDuration = updatedPomodoroDuration;
+          _shortBreakDuration = updatedShortBreakDuration;
+          _longBreakDuration = updatedLongBreakDuration;
+          _remainingTime = _getRemainingTime(_currentMode);
+        });
+      },
+      onBackgroundImageUpdated: (String updatedBackgroundImage) {
+        setState(() {
+          _backgroundImage = 'assets/images/$updatedBackgroundImage';
+        });
+      },
+    ).configureDurations();
+  }
+
+  Future<void> _initializePlayer() async {
+    await _soundPlayer?.openAudioSession();
+  }
+
+  @override
+  void dispose() {
+    _soundPlayer?.closeAudioSession();
+    _soundPlayer = null;
+    super.dispose();
+  }
+
+  Future<void> _playSound(String soundPath) async {
+    await _soundPlayer?.startPlayer(
+      fromURI: 'assets/sounds/$soundPath',
     );
+  }
+
+  Future<void> stopPlayer() async {
+    if (_soundPlayer != null) {
+      await _soundPlayer?.stopPlayer();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('../assets/images/bg.jpg'),
+            image: AssetImage(_backgroundImage),
             fit: BoxFit.cover,
             opacity: 0.5,
           ),
@@ -62,36 +202,27 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Pomodoro, Short Break, and Long Break buttons
-                  // ----------------------------------------------
-                  // When user taps Pomodoro, it should be selected and pomodoro
-                  // counter should start.
-                  //
-                  // When counter reaches 0, a notification should be shown,
-                  //
-                  // If completed cycles is less than cycles until long break,
-                  // short break counter should start.
-                  // Otherwise, long break counter should start.
                   _buildButton('pomodoro'),
                   const SizedBox(width: 10),
-                  // When user taps Short Break, it should be selected and short break counter should start.
-                  //
-                  // When counter reaches 0, a notification should be shown,
-                  // and pomodoro counter should start again.
                   _buildButton('short break'),
-                  // When user taps Long Break, it should be selected and long break counter should start.
-                  // When counter reaches 0, a notification should be shown,
-                  // and pomodoro counter should start again.
                   const SizedBox(width: 10),
                   _buildButton('long break'),
                 ],
               ),
               const SizedBox(height: 20),
               Text(
-                // '${_timerController.getCurrentDuration()}:00',
-                '25:00',
+                _formatTime(_remainingTime),
                 style: const TextStyle(
                   fontSize: 80,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Completed Cycles: $_completedCycles',
+                style: const TextStyle(
+                  fontSize: 20,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
@@ -106,7 +237,7 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-                child: const Text('start'),
+                child: Text(_isTimerRunning ? 'pause' : 'start'),
               ),
               const SizedBox(height: 20),
               Row(
@@ -132,27 +263,26 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
     );
   }
 
-  Widget _buildButton(String text, {bool isSelected = false}) {
-    bool isSelected = _selectedButton == text;
+  String _formatTime(int seconds) {
+    final minutes = seconds ~/ 60;
+    final remainingSeconds = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
+  }
+
+  Widget _buildButton(String text) {
+    bool isSelected = _currentMode == text;
+
     return ElevatedButton(
       onPressed: () {
-        // TODO: Implement button functionality
-        // Implement the functionality for the "pomodoro", "short break", and
-        // "long break" buttons to switch between the different modes and
-        // update the timer accordingly.
         setState(() {
-          _selectedButton = text;
-          switch (text) {
-            case 'pomodoro':
-              _timerController.configureDurations(25, 5, 15);
-              break;
-            case 'short break':
-              _timerController.configureDurations(5, 5, 15);
-              break;
-            case 'long break':
-              _timerController.configureDurations(15, 5, 15);
-              break;
+          if (_timer != null) {
+            _timer!.cancel();
+            _timer = null;
           }
+          _currentMode = text;
+          _remainingTime = _getRemainingTime(text);
+          _isTimerRunning = false;
+          _startTimer();
         });
       },
       style: ElevatedButton.styleFrom(

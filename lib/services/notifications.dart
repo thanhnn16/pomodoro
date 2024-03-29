@@ -1,32 +1,40 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-// Learning source: https://pub.dev/packages/flutter_local_notifications
-
 class Notifications {
   late FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin;
 
   Notifications() {
-    // _initializeNotifications();
+    _initializeNotifications();
   }
 
-  // void _initializeNotifications() {
-  //   // TODO: Initialize FlutterLocalNotificationsPlugin
-  //   var androidInitializationSettings =
-  //       AndroidInitializationSettings('@mipmap/ic_launcher');
-  //   var iOSInitializationSettings = IOSInitializationSettings();
-  //   var webInitializationSettings = WebInitializationSettings();
-  //   var initializationSettings = InitializationSettings(
-  //       android: androidInitializationSettings,
-  //       iOS: iOSInitializationSettings,
-  //       web: webInitializationSettings
-  //   );
-  //
-  //   _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  //   _flutterLocalNotificationsPlugin.initialize(initializationSettings,
-  //       onSelectNotification: selectNotification);
-  // }
+  Future<void> _initializeNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
-  void showNotification(String title, String body) {
-    // TODO: Implement the logic to show a local notification
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+
+    _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    _flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
+    await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
+  Future<void> showNotification(String title, String body) async {
+    var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
+      'pomodoro channel id',
+      'pomodoro channel name',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: false,
+      ticker: 'ticker',
+    );
+    var platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await _flutterLocalNotificationsPlugin
+        .show(0, title, body, platformChannelSpecifics, payload: 'item x');
   }
 }
