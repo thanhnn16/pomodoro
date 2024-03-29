@@ -1,20 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
-class PomodoroApp extends StatelessWidget {
-  const PomodoroApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Pomodoro Timer',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const PomodoroScreen(),
-    );
-  }
-}
+import 'package:pomodoro/services/timer_controller.dart';
 
 class PomodoroScreen extends StatefulWidget {
   const PomodoroScreen({super.key});
@@ -24,63 +9,52 @@ class PomodoroScreen extends StatefulWidget {
 }
 
 class _PomodoroScreenState extends State<PomodoroScreen> {
-  // These are suggested initial values for the Pomodoro timer.
-  final int _pomodoroDuration = 25;
-  final int _shortBreakDuration = 5;
-  final int _longBreakDuration = 10;
+  final TimerController _timerController = TimerController();
+  String _selectedButton = 'pomodoro';
 
-  final int _remainingTime = 0;
-
-  final bool _isWorking = true;
-
-  final int _completedCycles = 0;
-  final int _cyclesUntilLongBreak = 4;
-
-  late FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin;
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeNotifications();
-  }
-
-  void _initializeNotifications() {
-    // TODO: Initialize FlutterLocalNotificationsPlugin
-    final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // Get the default values from TimerController
+  //   _timerController.getDefaultValues().then((durations) {
+  //     setState(() {
+  //       _timerController.configureDurations(
+  //         durations.pomodoroDuration,
+  //         durations.shortBreakDuration,
+  //         durations.longBreakDuration,
+  //       );
+  //     });
+  //   });
+  // }
 
   void _startTimer() {
-    // TODO: Implement the logic to start the timer
-    // Start the timer based on the selected mode (Pomodoro, Short Break, or Long Break).
-    // Use a timer or a periodic function to update the remaining time and trigger
-    // the appropriate actions when each interval is completed.
-    final pomodoroTimer = PomodoroTimer();
+    _timerController.startTimer(25);
   }
 
   void _resetTimer() {
-    // TODO: Implement the logic to reset the timer
-    // Reset the timer to its initial state, clearing any ongoing intervals and
-    // resetting the completed cycles count.
+    _timerController.resetTimer();
   }
 
   void _configureDurations() {
-    // TODO: Implement the logic to show dialog to configure durations
-  }
-
-  void _showNotification(String title, String body) {
-    // TODO: Implement the logic to show a local notification
-    // Display a local notification when each interval is completed, informing
-    // the user about the end of the Pomodoro, Short Break, or Long Break.
+    _timerController.configureDurations(
+      5,
+      5,
+      10,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pomodoro Timer'),
-      ),
       body: Container(
-        color: Colors.blue.shade200,
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('../assets/images/bg.jpg'),
+            fit: BoxFit.cover,
+            opacity: 0.5,
+          ),
+          color: Colors.black,
+        ),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -98,7 +72,7 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
                   // If completed cycles is less than cycles until long break,
                   // short break counter should start.
                   // Otherwise, long break counter should start.
-                  _buildButton('pomodoro', isSelected: true),
+                  _buildButton('pomodoro'),
                   const SizedBox(width: 10),
                   // When user taps Short Break, it should be selected and short break counter should start.
                   //
@@ -113,9 +87,10 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
                 ],
               ),
               const SizedBox(height: 20),
-              const Text(
+              Text(
+                // '${_timerController.getCurrentDuration()}:00',
                 '25:00',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 80,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -158,12 +133,27 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
   }
 
   Widget _buildButton(String text, {bool isSelected = false}) {
+    bool isSelected = _selectedButton == text;
     return ElevatedButton(
       onPressed: () {
         // TODO: Implement button functionality
         // Implement the functionality for the "pomodoro", "short break", and
         // "long break" buttons to switch between the different modes and
         // update the timer accordingly.
+        setState(() {
+          _selectedButton = text;
+          switch (text) {
+            case 'pomodoro':
+              _timerController.configureDurations(25, 5, 15);
+              break;
+            case 'short break':
+              _timerController.configureDurations(5, 5, 15);
+              break;
+            case 'long break':
+              _timerController.configureDurations(15, 5, 15);
+              break;
+          }
+        });
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: isSelected ? Colors.red : Colors.white,

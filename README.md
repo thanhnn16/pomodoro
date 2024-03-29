@@ -2,45 +2,55 @@
 
 A Simple Pomodoro App for Flutter Learning Practice.
 
+## Learning Sources:
+1. [Dart Language](https://dart.dev/language)
+2. [Dartpad](https://dartpad.dev/?)
+3. [Flutter UI](https://docs.flutter.dev/ui)
+4. [Flutter Interaction](https://docs.flutter.dev/ui/interactivity)
+5. [Flutter Timer](https://pub.dev/packages/flutter_timer)
+6. [Flutter Notification](https://pub.dev/packages/flutter_local_notifications)
+7. [Flutter Sound](https://pub.dev/packages/flutter_sound)
+8. [Flutter Shared Preferences](https://pub.dev/packages/shared_preferences)
+9. [Flutter Audio Player](https://pub.dev/packages/audioplayers)
+
+Other resources:
+1. Fonts: https://pub.dev/packages/google_fonts
 
 
-## Install Flutter
-1. [Install Flutter](https://docs.flutter.dev/get-started/install)
-2. [Setup VSCode](https://docs.flutter.dev/get-started/editor?tab=vscode)
+## PLANNING
+1. Read documentation on Flutter Timer, Notification, Sound, Shared Preferences, Audio Player
+2. Refraction of the code structure
+3. Implement the functionality for the Pomodoro Timer app based on the provided code structure.
+4. Test the app on Chrome and Android Emulator
+5. Commit the code to GitHub
 
-## Run App (on Windows)
-1. Open PowerShell:
-   - Press `Win + S`, type `PowerShell`, and select "Windows PowerShell."
+## WORKING PROCESS
+1. Day 1: 28/03/2024:
+- Start the project
+- Read the documentation on Flutter Timer, Notification, Sound, Shared Preferences, Audio Player
+2. Day 2: 29/03/2024:
+- Refraction of the code structure
+- Implement the functionality for the Pomodoro Timer app based on the provided code structure.
+- Test the app on Chrome and Android Emulator
+- Commit the code to GitHub
 
-2. Navigate to code repo:
+## CODE STRUCTURE
+The code structure for the Pomodoro Timer app is provided in the `lib` directory. The `main.dart` file contains the main entry point for the app, which initializes the app and starts the Pomodoro Timer screen. The `pomodoro_timer.dart` file contains the main logic for the Pomodoro Timer app, including the timer functionality, interval switching, and notification handling. The `pomodoro_timer_screen.dart` file contains the UI for the Pomodoro Timer screen, including the timer display, control buttons, and cycle counter. The `pomodoro_timer_button.dart` file contains the custom button widget used in the Pomodoro Timer screen. The `pomodoro_timer_notification.dart` file contains the notification handling logic for the Pomodoro Timer app. The `pomodoro_timer_sound.dart` file contains the sound handling logic for the Pomodoro Timer app. The `pomodoro_timer_shared_preferences.dart` file contains the shared preferences handling logic for the Pomodoro Timer app.
 
-For example, when code is located at ``pomodoro``:
-```
-cd pomodoro
-```
-
-Install dependencies:
-```
-flutter pub get
-```
-
-3. Launch web app at port ``8080``:
-```
-flutter run -d chrome --web-port=8080
-```
-Press `Q` or `Ctrl+C` to terminate app
-
-![Preview](preview.png "Preview")
-
-4. Edit code & Hot reload:
-- Add/edit code at VSCode
-- Switch to PowerShell terminal then press `r` to apply changes
+## THINGS I LEARNED FROM THIS PROJECT
+1. Basic Flutter UI design
+2. Basic Dart Language
+3. Flutter Timer
+4. Flutter Notification
+5. Flutter Sound
+6. Flutter Shared Preferences
+7. Flutter Audio Player
 
 ## TODOs:
 
 Implement the functionality for the Pomodoro Timer app based on the provided code structure. The app should allow users to start, and reset the timer, as well as switch between Pomodoro, Short Break, and Long Break modes. The app should also keep track of the number of completed Pomodoro cycles and display notifications when each interval is completed.
 
-To envison how this app should work, please visit a similar app here: https://studywithme.io/aesthetic-pomodoro-timer/
+To envision how this app should work, please visit a similar app here: https://studywithme.io/aesthetic-pomodoro-timer/
 
 ## Pomodoro / Short Break / Long Break Mechanism:
 
@@ -52,10 +62,3 @@ The Pomodoro Technique is a time management method that uses a timer to break wo
 
 3. Long Break: The Long Break interval is an extended rest period, usually lasting 15-30 minutes. It provides a longer break after completing a set of Pomodoro intervals. The Long Break allows the user to recharge and prepare for the next set of Pomodoro intervals. After the Long Break, the app should start a new set of Pomodoro intervals.
 The app should keep track of the number of completed Pomodoro cycles (1 cycle = Pomodoro + Short Break or Pomodoro + Long Break) and display it to the user.
-
-
-## Learning Sources:
-1. [Dart Language](https://dart.dev/language)
-2. [Dartpad](https://dartpad.dev/?)
-3. [Flutter UI](https://docs.flutter.dev/ui)
-4. [Flutter Interaction](https://docs.flutter.dev/ui/interactivity)

@@ -1,44 +1,40 @@
-// timer_controller.dart
-
 import 'dart:async';
 
 class TimerController {
-  // Initialize the timer with default values.
+  late int _remainingTime = 0;
+  final String _currentState = 'Pomodoro';
+  final int _completedCycles = 0;
+  final int _cyclesUntilLongBreak = 4;
+
   int _pomodoroDuration = 25;
   int _shortBreakDuration = 5;
   int _longBreakDuration = 10;
+  final bool _isWorking = true;
 
-  int _remainingTime = 0;
-  bool _isWorking = true;
-
-  Timer? _timer;
-
-  // Start the timer.
-  void startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_remainingTime > 0) {
-        _remainingTime--;
+  void startTimer(time) {
+    // TODO: Implement the logic to start the timer
+    Timer.periodic(time, (timer) {
+      if (_remainingTime == 0) {
+        timer.cancel();
+        // Show notification
       } else {
-        _stopTimer();
-        // TODO: Implement logic to switch between work and break sessions.
+        _remainingTime--;
       }
     });
   }
 
-  // Stop the timer.
-  void stopTimer() {
-    _timer?.cancel();
+  void pauseTimer() {
+    // TODO: Implement the logic to pause the timer
   }
 
-  // Reset the timer.
   void resetTimer() {
-    _stopTimer();
-    // TODO: Implement logic to reset the timer to the initial values.
+    // TODO: Implement the logic to reset the timer
   }
 
-  // Set the timer state.
-  void setTimerState(bool isWorking) {
-    _isWorking = isWorking;
-    // TODO: Implement logic to update the timer display based on the state.
+  void configureDurations(
+      int pomodoroDuration, int shortBreakDuration, int longBreakDuration) {
+    _pomodoroDuration = pomodoroDuration;
+    _shortBreakDuration = shortBreakDuration;
+    _longBreakDuration = longBreakDuration;
   }
 }
