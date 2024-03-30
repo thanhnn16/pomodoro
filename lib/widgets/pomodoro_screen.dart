@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import '../services/notifications.dart';
 import 'configurator.dart';
 
-// TODO: update logic of cycle completion.
-
 class PomodoroScreen extends StatefulWidget {
   const PomodoroScreen({super.key});
   @override
@@ -26,6 +24,7 @@ class PomodoroScreenState extends State<PomodoroScreen> {
   bool _isWorking = true;
 
   int _completedCycles = 0;
+
   final int _cyclesUntilLongBreak = 4;
 
   late Notifications _notifications;
@@ -67,36 +66,36 @@ class PomodoroScreenState extends State<PomodoroScreen> {
 
   void _startTimer() {
     if (_isTimerRunning) {
-      if (_timer != null) {
-        _timer!.cancel();
-        _timer = null;
-      }
+      _timer?.cancel();
+      _timer = null;
       setState(() {
         _isTimerRunning = false;
       });
     } else {
-      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      _timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
         if (_remainingTime > 0) {
           setState(() {
             _remainingTime--;
           });
         } else {
-          _timer!.cancel();
+          timer.cancel();
           _timer = null;
           _isTimerRunning = false;
 
           if (_currentMode == 'pomodoro' && _remainingTime == 0) {
-            _completedCycles++;
             _playSound(_notificationSound);
-            _showNotification('Cycle Completed',
-                'The cycle has completed $_completedCycles times');
-            if (_completedCycles >= _cyclesUntilLongBreak) {
-              _currentMode = 'long break';
-            } else {
-              _currentMode = 'short break';
+            _showNotification('$_currentMode completed', 'Time for a break');
+            _currentMode = _completedCycles >= _cyclesUntilLongBreak
+                ? 'long break'
+                : 'short break';
+          } else if (_currentMode == 'short break') {
+            _showNotification('$_currentMode completed', 'Time to work');
+            _currentMode = 'pomodoro';
+          } else if (_currentMode == 'long break') {
+            if (_isWorking) {
+              _completedCycles++;
             }
-          } else if (_currentMode == 'short break' ||
-              _currentMode == 'long break') {
+            _showNotification('$_currentMode completed', 'Time to work');
             _currentMode = 'pomodoro';
           }
 
@@ -111,12 +110,7 @@ class PomodoroScreenState extends State<PomodoroScreen> {
       setState(() {
         _isTimerRunning = true;
       });
-      if (_currentMode == 'pomodoro') {
-        _isWorking = true;
-      } else if (_currentMode == 'short break' ||
-          _currentMode == 'long break') {
-        _isWorking = false;
-      }
+      _isWorking = _currentMode == 'pomodoro';
     }
   }
 
