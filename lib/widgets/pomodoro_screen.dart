@@ -26,7 +26,9 @@ class PomodoroScreenState extends State<PomodoroScreen> {
 
   int _completedCycles = 0;
 
-  final int _cyclesUntilLongBreak = 4;
+  int _count = 0;
+
+  int _cyclesUntilLongBreak = 4;
 
   late Notifications _notifications;
 
@@ -66,12 +68,6 @@ class PomodoroScreenState extends State<PomodoroScreen> {
   }
 
   void _startTimer() {
-
-    print('Is working: ' + _isWorking.toString());
-    print('Current mode: ' + _currentMode);
-    print('Completed cycle: ' + _completedCycles.toString());
-    print('Cycle until long break: ' + _cyclesUntilLongBreak.toString());
-
     if (_isTimerRunning) {
       _timer?.cancel();
       _timer = null;
@@ -92,20 +88,20 @@ class PomodoroScreenState extends State<PomodoroScreen> {
           if (_currentMode == 'pomodoro' && _remainingTime == 0) {
             _playSound(_notificationSound);
             _showNotification('$_currentMode completed', 'Time for a break');
-            _currentMode = _completedCycles >= _cyclesUntilLongBreak
+            _count++;
+            _currentMode = _count >= _cyclesUntilLongBreak
                 ? 'long break'
                 : 'short break';
-          } else if (_currentMode == 'short break') {
+            _isWorking = false;
+          } else if (_currentMode == 'short break' || _currentMode == 'long break') {
+            _playSound(_notificationSound);
             _showNotification('$_currentMode completed', 'Time to work');
-            _currentMode = 'pomodoro';
             _isWorking = true;
-          } else if (_currentMode == 'long break') {
-            if (_isWorking) {
-              _completedCycles++;
+            if (_currentMode == 'long break') {
+              _count = 0;
             }
-            _showNotification('$_currentMode completed', 'Time to work');
+            _completedCycles++;
             _currentMode = 'pomodoro';
-            _isWorking = true;
           }
 
           _remainingTime = _getRemainingTime(_currentMode);
@@ -130,6 +126,7 @@ class PomodoroScreenState extends State<PomodoroScreen> {
     setState(() {
       _isWorking = true;
       _completedCycles = 0;
+      _count = 0;
       _isTimerRunning = false;
       _currentMode = 'pomodoro';
       _remainingTime = _getRemainingTime(_currentMode);
@@ -151,6 +148,7 @@ class PomodoroScreenState extends State<PomodoroScreen> {
           _pomodoroDuration = updatedPomodoroDuration;
           _shortBreakDuration = updatedShortBreakDuration;
           _longBreakDuration = updatedLongBreakDuration;
+          _cyclesUntilLongBreak = updatedCyclesUntilLongBreak;
           _remainingTime = _getRemainingTime(_currentMode);
         });
       },
