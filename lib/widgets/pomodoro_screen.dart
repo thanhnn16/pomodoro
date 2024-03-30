@@ -22,7 +22,7 @@ class PomodoroScreenState extends State<PomodoroScreen> {
 
   int _remainingTime = 0;
 
-  bool _isWorking = true;
+  // bool _isWorking = true;
 
   int _completedCycles = 0;
 
@@ -92,11 +92,11 @@ class PomodoroScreenState extends State<PomodoroScreen> {
             _currentMode = _count >= _cyclesUntilLongBreak
                 ? 'long break'
                 : 'short break';
-            _isWorking = false;
+            // _isWorking = false;
           } else if (_currentMode == 'short break' || _currentMode == 'long break') {
             _playSound(_notificationSound);
             _showNotification('$_currentMode completed', 'Time to work');
-            _isWorking = true;
+            // _isWorking = true;
             if (_currentMode == 'long break') {
               _count = 0;
             }
@@ -124,7 +124,7 @@ class PomodoroScreenState extends State<PomodoroScreen> {
       _timer = null;
     }
     setState(() {
-      _isWorking = true;
+      // _isWorking = true;
       _completedCycles = 0;
       _count = 0;
       _isTimerRunning = false;
@@ -270,7 +270,7 @@ class PomodoroScreenState extends State<PomodoroScreen> {
           _currentMode = text;
           _remainingTime = _getRemainingTime(text);
           _isTimerRunning = false;
-          _isWorking = _currentMode == 'pomodoro';
+          // _isWorking = _currentMode == 'pomodoro';
           _startTimer();
         });
       },
