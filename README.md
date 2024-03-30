@@ -1,6 +1,7 @@
 # calculator
 
 A Simple Pomodoro App for Flutter Learning Practice.
+Tested on: Chrome, Android Emulator (34), MacOS (Sonoma 14.4), iPhone XS (iOS 17.4)
 
 ## Learning Sources:
 1. [Dart Language](https://dart.dev/language)
@@ -17,11 +18,11 @@ Other resources:
 2. Sounds, Images: https://pixabay.com/
 
 ## PLANNING
-1. Read documentation on Flutter Timer, Notification, Sound, Shared Preferences, Audio Player
+1. Read documentation on Flutter Timer, Notification, Shared Preferences, Audio Player
 2. Refraction of the code structure
 3. Implement the functionality for the Pomodoro Timer app based on the provided code structure.
 4. Test the app on Chrome and Android Emulator
-5. Commit the code to GitHub
+5. Test the app on MacOS, iOS
 
 ## WORKING PROCESS
 1. Day 1: 28/03/2024:
@@ -32,9 +33,18 @@ Other resources:
 - Implement the functionality for the Pomodoro Timer app based on the provided code structure.
 - Test the app on Chrome and Android Emulator
 - Commit the code to GitHub
+3. Day 3: 30/03/2024
+- Init Notification for macOS and iOS
+- Test the app on MacOS, iOS
+- Update the README.md file
+- Submit the project
 
 ## CODE STRUCTURE
-The code structure for the Pomodoro Timer app is provided in the `lib` directory. The `main.dart` file contains the main entry point for the app, which initializes the app and starts the Pomodoro Timer screen. The `pomodoro_timer.dart` file contains the main logic for the Pomodoro Timer app, including the timer functionality, interval switching, and notification handling. The `pomodoro_timer_screen.dart` file contains the UI for the Pomodoro Timer screen, including the timer display, control buttons, and cycle counter. The `pomodoro_timer_button.dart` file contains the custom button widget used in the Pomodoro Timer screen. The `pomodoro_timer_notification.dart` file contains the notification handling logic for the Pomodoro Timer app. The `pomodoro_timer_sound.dart` file contains the sound handling logic for the Pomodoro Timer app. The `pomodoro_timer_shared_preferences.dart` file contains the shared preferences handling logic for the Pomodoro Timer app.
+1. `main.dart`: Main file to run the app
+2. `/widgets/configurator.dart`: Configurator widget to set the Pomodoro, Short Break, Long Break time
+3. `/widgets/pomodoro_screen.dart`: PomodoroScreen widget to display the Pomodoro Timer
+4. `/services/notification.dart`: NotificationService to show the notification
+5. `/assets/`: Contains assets for the app
 
 ## THINGS I LEARNED FROM THIS PROJECT
 1. Basic Flutter UI design
@@ -47,6 +57,16 @@ The code structure for the Pomodoro Timer app is provided in the `lib` directory
 8. Flutter Audio Player
 9. ValueNotifier
 10. ValueListenableBuilder
+
+## ISSUES
+1. Responsive UI
+2. Testing...
+
+## TOOLS USED
+1. Android Studio
+2. Github Copilot
+3. Flutter Inspector
+4. Dartpad
 
 ## TODOs:
 
@@ -64,3 +84,10 @@ The Pomodoro Technique is a time management method that uses a timer to break wo
 
 3. Long Break: The Long Break interval is an extended rest period, usually lasting 15-30 minutes. It provides a longer break after completing a set of Pomodoro intervals. The Long Break allows the user to recharge and prepare for the next set of Pomodoro intervals. After the Long Break, the app should start a new set of Pomodoro intervals.
 The app should keep track of the number of completed Pomodoro cycles (1 cycle = Pomodoro + Short Break or Pomodoro + Long Break) and display it to the user.
+
+## SCREEN SHOTS
+![](/screenshots/macOs.png)
+![](/screenshots/macOs_noti.png)
+![](/screenshots/config.png)
+![](/screenshots/ios.jpg)
+![](/screenshots/web.png)

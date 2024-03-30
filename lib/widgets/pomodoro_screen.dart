@@ -7,6 +7,7 @@ import 'configurator.dart';
 
 class PomodoroScreen extends StatefulWidget {
   const PomodoroScreen({super.key});
+
   @override
   PomodoroScreenState createState() => PomodoroScreenState();
 }
@@ -65,6 +66,12 @@ class PomodoroScreenState extends State<PomodoroScreen> {
   }
 
   void _startTimer() {
+
+    print('Is working: ' + _isWorking.toString());
+    print('Current mode: ' + _currentMode);
+    print('Completed cycle: ' + _completedCycles.toString());
+    print('Cycle until long break: ' + _cyclesUntilLongBreak.toString());
+
     if (_isTimerRunning) {
       _timer?.cancel();
       _timer = null;
@@ -91,12 +98,14 @@ class PomodoroScreenState extends State<PomodoroScreen> {
           } else if (_currentMode == 'short break') {
             _showNotification('$_currentMode completed', 'Time to work');
             _currentMode = 'pomodoro';
+            _isWorking = true;
           } else if (_currentMode == 'long break') {
             if (_isWorking) {
               _completedCycles++;
             }
             _showNotification('$_currentMode completed', 'Time to work');
             _currentMode = 'pomodoro';
+            _isWorking = true;
           }
 
           _remainingTime = _getRemainingTime(_currentMode);
@@ -110,18 +119,14 @@ class PomodoroScreenState extends State<PomodoroScreen> {
       setState(() {
         _isTimerRunning = true;
       });
-      _isWorking = _currentMode == 'pomodoro';
     }
   }
 
   void _resetTimer() {
-    _playSound(_notificationSound);
-
     if (_timer != null) {
       _timer!.cancel();
       _timer = null;
     }
-
     setState(() {
       _isWorking = true;
       _completedCycles = 0;
@@ -137,8 +142,11 @@ class PomodoroScreenState extends State<PomodoroScreen> {
       pomodoroDuration: _pomodoroDuration,
       shortBreakDuration: _shortBreakDuration,
       longBreakDuration: _longBreakDuration,
+      cyclesUntilLongBreak: _cyclesUntilLongBreak,
       onDurationsUpdated: (int updatedPomodoroDuration,
-          int updatedShortBreakDuration, int updatedLongBreakDuration) {
+          int updatedShortBreakDuration,
+          int updatedLongBreakDuration,
+          int updatedCyclesUntilLongBreak) {
         setState(() {
           _pomodoroDuration = updatedPomodoroDuration;
           _shortBreakDuration = updatedShortBreakDuration;
@@ -264,6 +272,7 @@ class PomodoroScreenState extends State<PomodoroScreen> {
           _currentMode = text;
           _remainingTime = _getRemainingTime(text);
           _isTimerRunning = false;
+          _isWorking = _currentMode == 'pomodoro';
           _startTimer();
         });
       },

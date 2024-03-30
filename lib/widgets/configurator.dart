@@ -5,7 +5,8 @@ class DurationConfigurator {
   final int pomodoroDuration;
   final int shortBreakDuration;
   final int longBreakDuration;
-  final Function(int, int, int) onDurationsUpdated;
+  final int cyclesUntilLongBreak;
+  final Function(int, int, int, int) onDurationsUpdated;
   final Function(String) onBackgroundImageUpdated;
   final Function(String) onNotificationSoundUpdated;
 
@@ -14,6 +15,7 @@ class DurationConfigurator {
     required this.pomodoroDuration,
     required this.shortBreakDuration,
     required this.longBreakDuration,
+    required this.cyclesUntilLongBreak,
     required this.onDurationsUpdated,
     required this.onBackgroundImageUpdated,
     required this.onNotificationSoundUpdated,
@@ -26,6 +28,9 @@ class DurationConfigurator {
         TextEditingController(text: '$shortBreakDuration');
     TextEditingController longBreakController =
         TextEditingController(text: '$longBreakDuration');
+    TextEditingController cyclesUntilLongBreakController =
+    TextEditingController(text: '$cyclesUntilLongBreak');
+
 
     ValueNotifier<String> selectedNotificationSoundNotifier =
         ValueNotifier<String>('Bell');
@@ -49,7 +54,7 @@ class DurationConfigurator {
     ValueNotifier<String> selectedBackgroundImageNotifier =
         ValueNotifier<String>(imageList[0]);
 
-    String selectedBackgroundImage = imageList[0];
+    // String selectedBackgroundImage = imageList[0];
 
     showDialog(
       context: context,
@@ -84,6 +89,14 @@ class DurationConfigurator {
                     ),
                     keyboardType: TextInputType.number,
                     maxLength: 2,
+                  ),
+                  TextField(
+                    controller: cyclesUntilLongBreakController,
+                    decoration: const InputDecoration(
+                      labelText: "Cycles Until Long Break",
+                    ),
+                    keyboardType: TextInputType.number,
+                    maxLength: 1,
                   ),
                   const Text(
                     'Choose notification sound',
@@ -151,11 +164,14 @@ class DurationConfigurator {
                         shortBreakDuration;
                 int updatedLongBreakDuration =
                     int.tryParse(longBreakController.text) ?? longBreakDuration;
+                int updatedCyclesUntilLongBreak =
+                    int.tryParse(cyclesUntilLongBreakController.text) ?? cyclesUntilLongBreak;
 
                 onDurationsUpdated(
                   updatedPomodoroDuration,
                   updatedShortBreakDuration,
                   updatedLongBreakDuration,
+                  updatedCyclesUntilLongBreak,
                 );
 
                 Navigator.of(context).pop();
